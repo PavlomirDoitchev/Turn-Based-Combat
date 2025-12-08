@@ -1,21 +1,31 @@
-﻿using UnityEngine;
+﻿using Assets.Assets.Scripts.Grid;
+using UnityEngine;
 
 namespace Assets.Assets.Scripts
 {
     public class Unit : MonoBehaviour
     {
+        [Header("References")]
         [SerializeField] private Animator animator;
-
+        private GridPosition gridPosition;
         private Vector3 targetPosition;
+
+        [Header("Stats")]
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float rotateSpeed = 10f;
         float stoppingDistance = 0.1f;
+
 
         private bool isMoving = false;
         public bool IsMoving => isMoving;
         private void Awake()
         {
             targetPosition = transform.position;
+        }
+        private void Start()
+        {
+            gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+            LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
         }
 
         private void Update()
@@ -27,7 +37,7 @@ namespace Assets.Assets.Scripts
                 if (!isMoving)
                 {
                     isMoving = true;
-                    animator.CrossFadeInFixedTime("Run_1H_Forward", .1f);
+                    animator.CrossFadeInFixedTime("Walk_Forward", .1f);
                 }
 
                 Vector3 moveDirection = (targetPosition - transform.position).normalized;
@@ -39,11 +49,16 @@ namespace Assets.Assets.Scripts
                 if (isMoving)
                 {
                     isMoving = false;
-                    animator.CrossFadeInFixedTime("Combat_1H_Ready", .1f);
+                    animator.CrossFadeInFixedTime("idle", .1f);
                 }
             }
+            GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+            if(newGridPosition != gridPosition)
+            {
+                LevelGrid.Instance.UnitMoveGridPosition(this, gridPosition, newGridPosition);
+                gridPosition = newGridPosition;
+            }
 
-         
         }
 
         public void Move(Vector3 targetPosition)
