@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using Assets.Assets.Scripts.Grid;
 namespace Assets.Assets.Scripts
 {
     public class UnitActionSystem : MonoBehaviour
@@ -10,6 +11,7 @@ namespace Assets.Assets.Scripts
         [SerializeField] private LayerMask unitLayer;
         private void Awake()
         {
+            selectedUnit = null;
             if (Instance != null) 
             {
                 Debug.LogError("There is more than one UnitActionSystem! " + transform + " - " + Instance);
@@ -24,21 +26,27 @@ namespace Assets.Assets.Scripts
             {
                 if (TryHandleUnitSelection()) return;
                 // Block moving the unit while it is already moving
-                if (selectedUnit != null && !selectedUnit.IsMoving)
-                    selectedUnit?.Move(targetPosition: Mouseworld.GetPosition());
+                //if (selectedUnit != null && !selectedUnit.IsMoving)
+                //    selectedUnit?.Move(targetPosition: Mouseworld.GetPosition());
 
+                GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
+                if (selectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition)) 
+                {
+                    selectedUnit?.GetMoveAction().Move(mouseGridPosition);
+                }
             }
             if (Input.GetMouseButtonDown(1))
             {
                 selectedUnit = null;
+                GridCellHighlight.Instance.Hide();
                 OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
             }
         }
             private bool TryHandleUnitSelection()
         {
             // Block selecting anything while the selected unit is moving
-            if (selectedUnit != null && selectedUnit.IsMoving)
-                return false;
+            //if (selectedUnit != null && selectedUnit.IsMoving)
+            //    return false;
 
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -56,6 +64,12 @@ namespace Assets.Assets.Scripts
         private void SetSelectedUnit(Unit unit)
         {
             selectedUnit = unit;
+
+            var moveAction = unit.GetMoveAction();
+            var validPositions = moveAction.GetValidActionGridPositionList();
+
+            GridCellHighlight.Instance.ShowCells(validPositions, 2f);
+
             OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
         }
         public Unit GetSelectedUnit()

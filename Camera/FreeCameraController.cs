@@ -57,13 +57,22 @@ public class FreeCameraController : MonoBehaviour
 
     private void HandleMovement()
     {
+
+        Vector3 forward = camTransform.forward;
+        forward.y = 0;
+        forward.Normalize();
+
+        Vector3 right = camTransform.right;
+        right.y = 0;
+        right.Normalize();
+
         Vector3 input = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.W)) input += camTransform.forward;
-        if (Input.GetKey(KeyCode.S)) input -= camTransform.forward;
-        if (Input.GetKey(KeyCode.A)) input -= camTransform.right;
-        if (Input.GetKey(KeyCode.D)) input += camTransform.right;
-        if (Input.GetKey(KeyCode.Q)) input += Vector3.down;
+        if (Input.GetKey(KeyCode.W)) input += forward;
+        if (Input.GetKey(KeyCode.S)) input -= forward;
+        if (Input.GetKey(KeyCode.A)) input -= right;
+        if (Input.GetKey(KeyCode.D)) input += right;
+        if (Input.GetKey(KeyCode.Q)) input -= Vector3.up;
         if (Input.GetKey(KeyCode.E)) input += Vector3.up;
 
         if (input != Vector3.zero)
@@ -71,7 +80,7 @@ public class FreeCameraController : MonoBehaviour
             float speed = moveSpeed;
             if (Input.GetKey(KeyCode.LeftShift)) speed *= fastMoveMultiplier;
 
-            velocity += input.normalized * speed;
+            velocity += input.normalized * speed * Time.deltaTime;
         }
 
         velocity = Vector3.Lerp(velocity, Vector3.zero, Time.deltaTime * drag);
@@ -80,7 +89,7 @@ public class FreeCameraController : MonoBehaviour
 
     private void HandleRotation()
     {
-        if (!Input.GetMouseButton(1))
+        if (!Input.GetMouseButton(2 ))
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -106,7 +115,7 @@ public class FreeCameraController : MonoBehaviour
     {
         if (Input.mouseScrollDelta.y != 0)
         {
-            float target = Mathf.Clamp(distance - Input.mouseScrollDelta.y, minDistance, maxDistance);
+            float target = Mathf.Clamp(distance - Input.mouseScrollDelta.y * 100, minDistance, maxDistance);
             distance = Mathf.SmoothDamp(distance, target, ref zoomVelocity, 0.2f);
         }
     }
