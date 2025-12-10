@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Assets.Assets.Scripts.Actions
 {
@@ -6,6 +7,7 @@ namespace Assets.Assets.Scripts.Actions
     {
         protected Unit unit;
         protected bool isActive;
+        protected Action onActionComplete;
 
         protected virtual void Awake()
         {

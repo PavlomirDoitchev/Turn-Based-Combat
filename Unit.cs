@@ -12,12 +12,13 @@ namespace Assets.Assets.Scripts
         // Actions
         private MoveAction moveAction;
         private SpinAction spinAction;
-
+        private BaseAction[] baseActionArray;
 
         private void Awake()
         {
             moveAction = GetComponent<MoveAction>();
             spinAction = GetComponent<SpinAction>();
+            baseActionArray = GetComponents<BaseAction>();
         }
         private void Start()
         {
@@ -40,5 +41,6 @@ namespace Assets.Assets.Scripts
         // Expose Actions
         public MoveAction GetMoveAction() => moveAction;
         public SpinAction GetSpinAction() => spinAction;
+        public BaseAction[] GetBaseActionArray() => baseActionArray;
     }
 }

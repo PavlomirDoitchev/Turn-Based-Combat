@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Assets.Assets.Scripts.Grid;
+using System;
 
 namespace Assets.Assets.Scripts.Actions
 {
@@ -51,12 +52,14 @@ namespace Assets.Assets.Scripts.Actions
                     animator.CrossFadeInFixedTime("idle", .1f);
                     GridCellHighlight.Instance.ShowCells(GetValidActionGridPositionList(), 2f);
                     isActive = false;
+                    onActionComplete();
                 }
             }
             transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
         }
-        public void Move(GridPosition gridPosition)
+        public void Move(GridPosition gridPosition, Action onActionComplete)
         {
+            this.onActionComplete = onActionComplete;
             this.targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
             isActive = true;
         }

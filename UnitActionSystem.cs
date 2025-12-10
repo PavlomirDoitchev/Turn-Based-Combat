@@ -9,10 +9,12 @@ namespace Assets.Assets.Scripts
         public event EventHandler OnSelectedUnitChanged;
         [SerializeField] private Unit selectedUnit;
         [SerializeField] private LayerMask unitLayer;
+
+        private bool isBusy;
         private void Awake()
         {
-            selectedUnit = null;
-            if (Instance != null) 
+            //selectedUnit = null;
+            if (Instance != null)
             {
                 Debug.LogError("There is more than one UnitActionSystem! " + transform + " - " + Instance);
                 Destroy(gameObject);
@@ -22,6 +24,8 @@ namespace Assets.Assets.Scripts
         }
         private void Update()
         {
+            if (isBusy) return;
+
             if (Input.GetMouseButtonDown(0))
             {
                 if (TryHandleUnitSelection()) return;
@@ -30,26 +34,34 @@ namespace Assets.Assets.Scripts
                 //    selectedUnit?.Move(targetPosition: Mouseworld.GetPosition());
 
                 GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
-                if (selectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition)) 
+                if (selectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition))
                 {
-                    selectedUnit?.GetMoveAction().Move(mouseGridPosition);
+                    SetBusy();
+                    selectedUnit?.GetMoveAction().Move(mouseGridPosition, ClearBusy);
                 }
             }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (selectedUnit != null)
+                {
+                    SetBusy();
+                    selectedUnit.GetSpinAction().Spin(ClearBusy);
+                }
+            }
+            DeSelectUnit();
+        }
+
+        private void DeSelectUnit()
+        {
             if (Input.GetMouseButtonDown(1))
             {
                 selectedUnit = null;
                 GridCellHighlight.Instance.Hide();
                 OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
             }
-            if(Input.GetKeyDown(KeyCode.Space))
-            {
-                if (selectedUnit != null)
-                {
-                    selectedUnit.GetSpinAction().Spin();
-                }
-            }
         }
-            private bool TryHandleUnitSelection()
+
+        private bool TryHandleUnitSelection()
         {
             // Block selecting anything while the selected unit is moving
             //if (selectedUnit != null && selectedUnit.IsMoving)
@@ -82,6 +94,14 @@ namespace Assets.Assets.Scripts
         public Unit GetSelectedUnit()
         {
             return selectedUnit;
-        }   
+        }
+        private void SetBusy()
+        {
+            isBusy = true;
+        }
+        private void ClearBusy()
+        {
+            isBusy = false;
+        }
     }
 }
