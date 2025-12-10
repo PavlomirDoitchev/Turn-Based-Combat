@@ -41,6 +41,13 @@ namespace Assets.Assets.Scripts
                 GridCellHighlight.Instance.Hide();
                 OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
             }
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                if (selectedUnit != null)
+                {
+                    selectedUnit.GetSpinAction().Spin();
+                }
+            }
         }
             private bool TryHandleUnitSelection()
         {

@@ -5,10 +5,10 @@ using Assets.Assets.Scripts.Grid;
 namespace Assets.Assets.Scripts.Actions
 {
     // Attach this to Units that can move
-    public class MoveAction : MonoBehaviour
+    public class MoveAction : BaseAction
     {
         [SerializeField] private Animator animator;
-        private Unit unit;
+        
 
         [Header("Stats")]
         [SerializeField] private int maxMoveDistance = 4;
@@ -18,17 +18,19 @@ namespace Assets.Assets.Scripts.Actions
 
 
         private Vector3 targetPosition;
-
+        
         private bool isMoving = false;
         public bool IsMoving => isMoving;
-        private void Awake()
+        protected override void Awake()
         {
-            unit = GetComponent<Unit>();
+            base.Awake();
             targetPosition = transform.position;
         }
         private void Update()
         {
+            if (!isActive) { return; }
             float dist = Vector3.Distance(transform.position, targetPosition);
+            Vector3 moveDirection = (targetPosition - transform.position).normalized;
 
             if (dist > stoppingDistance)
             {
@@ -39,9 +41,7 @@ namespace Assets.Assets.Scripts.Actions
                     animator.CrossFadeInFixedTime("Walk_Forward", .1f);
                 }
 
-                Vector3 moveDirection = (targetPosition - transform.position).normalized;
                 transform.position += moveDirection * Time.deltaTime * moveSpeed;
-                transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
             }
             else
             {
@@ -50,19 +50,21 @@ namespace Assets.Assets.Scripts.Actions
                     isMoving = false;
                     animator.CrossFadeInFixedTime("idle", .1f);
                     GridCellHighlight.Instance.ShowCells(GetValidActionGridPositionList(), 2f);
-
+                    isActive = false;
                 }
             }
+            transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
         }
         public void Move(GridPosition gridPosition)
         {
             this.targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
+            isActive = true;
         }
         public bool IsValidActionGridPosition(GridPosition gridPosition)
         {
             List<GridPosition> validGridPositionList = GetValidActionGridPositionList();
             return validGridPositionList.Contains(gridPosition);
-        }   
+        }
         public List<GridPosition> GetValidActionGridPositionList()
         {
             List<GridPosition> validGridPositionList = new List<GridPosition>();
@@ -74,7 +76,7 @@ namespace Assets.Assets.Scripts.Actions
                 {
                     GridPosition offsetGridPosition = new GridPosition(x, z);
                     GridPosition testGridPosition = unitGridPosition + offsetGridPosition;
-                    if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition)) 
+                    if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition))
                     {
                         continue;
                     }

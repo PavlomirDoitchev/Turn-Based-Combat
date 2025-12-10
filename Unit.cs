@@ -8,11 +8,16 @@ namespace Assets.Assets.Scripts
     {
         [Header("References")]
         private GridPosition gridPosition;
+
+        // Actions
         private MoveAction moveAction;
+        private SpinAction spinAction;
+
 
         private void Awake()
         {
             moveAction = GetComponent<MoveAction>();
+            spinAction = GetComponent<SpinAction>();
         }
         private void Start()
         {
@@ -30,13 +35,10 @@ namespace Assets.Assets.Scripts
                 gridPosition = newGridPosition;
             }
         }
-        public MoveAction GetMoveAction()
-        {
-            return moveAction;
-        }
-        public GridPosition GetGridPosition()
-        {
-            return gridPosition;
-        }
+        public GridPosition GetGridPosition() => gridPosition;
+        
+        // Expose Actions
+        public MoveAction GetMoveAction() => moveAction;
+        public SpinAction GetSpinAction() => spinAction;
     }
 }

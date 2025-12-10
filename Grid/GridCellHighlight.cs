@@ -25,7 +25,12 @@ public class GridCellHighlight : MonoBehaviour
         this.cellSize = cellSize;
         BuildMesh(gridPositions);
         meshCollider.sharedMesh = null;
-        meshCollider.sharedMesh = mesh;
+
+        if (vertices.Length > 0)
+        {
+            meshCollider.sharedMesh = mesh;
+        }
+
     }
 
     public void Hide()
