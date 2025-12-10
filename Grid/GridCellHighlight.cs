@@ -19,12 +19,12 @@ public class GridCellHighlight : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
         meshCollider = gameObject.AddComponent<MeshCollider>();
     }
-  
+
     public void ShowCells(List<GridPosition> gridPositions, float cellSize)
     {
         this.cellSize = cellSize;
         BuildMesh(gridPositions);
-        meshCollider.sharedMesh = null; 
+        meshCollider.sharedMesh = null;
         meshCollider.sharedMesh = mesh;
     }
 
@@ -78,5 +78,5 @@ public class GridCellHighlight : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    
+
 }
