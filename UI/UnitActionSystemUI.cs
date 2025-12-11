@@ -13,6 +13,7 @@ namespace Assets.Assets.Scripts.UI
         [SerializeField] private Transform actionButtonPrefab;
         [SerializeField] private Transform actionButtonContainterTransform;
         [SerializeField] private TextMeshProUGUI actionPointsText;
+        [SerializeField] private UnitPortraitCamera portraitCamera;
         private List<ActionButtonUI> actionButtonsUIList;
         private void Awake()
         {
@@ -61,8 +62,11 @@ namespace Assets.Assets.Scripts.UI
         {
             UpdateActionPoints();
         }
-        private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e) 
+        private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e)
         {
+            Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+            portraitCamera.SetUnit(selectedUnit);
+
             CreateUnitActionButtons();
             UpdateSelectedVisual();
             UpdateActionPoints();

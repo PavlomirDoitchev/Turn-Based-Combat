@@ -46,9 +46,10 @@ namespace Assets.Assets.Scripts
         }
         private void HandleSelectedAction()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && selectedUnit != null)
             {
                 GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
+                
                 if (!selectedAction.IsValidActionGridPosition(mouseGridPosition))
                 {
                     return;
@@ -75,9 +76,7 @@ namespace Assets.Assets.Scripts
 
         private bool TryHandleUnitSelection()
         {
-            // Block selecting anything while the selected unit is moving
-            //if (selectedUnit != null && selectedUnit.IsMoving)
-            //    return false;
+            
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

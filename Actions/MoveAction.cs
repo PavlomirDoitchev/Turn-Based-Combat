@@ -32,7 +32,6 @@ namespace Assets.Assets.Scripts.Actions
 
             if (dist > stoppingDistance)
             {
-                //GridCellHighlight.Instance.Hide();
                 if (!isMoving)
                 {
                     isMoving = true;
