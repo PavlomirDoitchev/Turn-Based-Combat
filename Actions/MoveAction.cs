@@ -8,9 +8,6 @@ namespace Assets.Assets.Scripts.Actions
     // Attach this to Units that can move
     public class MoveAction : BaseAction
     {
-        [SerializeField] private Animator animator;
-        
-
         [Header("Stats")]
         [SerializeField] private int maxMoveDistance = 4;
         [SerializeField] private float moveSpeed = 5f;
@@ -39,7 +36,7 @@ namespace Assets.Assets.Scripts.Actions
                 if (!isMoving)
                 {
                     isMoving = true;
-                    animator.CrossFadeInFixedTime("Walk_Forward", .1f);
+                    unit.GetAnimationController().Play(AnimationState.Run);
                 }
 
                 transform.position += moveDirection * Time.deltaTime * moveSpeed;
@@ -49,7 +46,7 @@ namespace Assets.Assets.Scripts.Actions
                 if (isMoving)
                 {
                     isMoving = false;
-                    animator.CrossFadeInFixedTime("idle", .1f);
+                    unit.GetAnimationController().Play(AnimationState.Idle);
                     GridCellHighlight.Instance.ShowCells(GetValidActionGridPositionList(), 2f);
                     isActive = false;
                     onActionComplete();

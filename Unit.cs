@@ -8,7 +8,8 @@ namespace Assets.Assets.Scripts
     {
         [Header("References")]
         private GridPosition gridPosition;
-
+        public UnitAnimationSet animationSet;
+        private UnitAnimationController animationController;
         // Actions
         private MoveAction moveAction;
         private SpinAction spinAction;
@@ -16,6 +17,7 @@ namespace Assets.Assets.Scripts
 
         private void Awake()
         {
+            animationController = GetComponent<UnitAnimationController>();
             moveAction = GetComponent<MoveAction>();
             spinAction = GetComponent<SpinAction>();
             baseActionArray = GetComponents<BaseAction>();
@@ -24,6 +26,9 @@ namespace Assets.Assets.Scripts
         {
             gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
             LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
+
+            animationController.Init(animationSet);
+            animationController.Play(AnimationState.Idle);
         }
 
         private void Update()
@@ -37,7 +42,7 @@ namespace Assets.Assets.Scripts
             }
         }
         public GridPosition GetGridPosition() => gridPosition;
-        
+        public UnitAnimationController GetAnimationController() => animationController;
         // Expose Actions
         public MoveAction GetMoveAction() => moveAction;
         public SpinAction GetSpinAction() => spinAction;
