@@ -9,9 +9,14 @@ namespace Assets.Assets.Scripts
     {
         public static UnitActionSystem Instance { get; private set; }
         public event EventHandler OnSelectedUnitChanged;
+        public event EventHandler OnSelectedActionChanged;
+        public event EventHandler<bool> OnBusyChanged;
+        public event EventHandler OnActionStarted;
         private Unit selectedUnit;
-        [SerializeField] private LayerMask unitLayer;
         private BaseAction selectedAction;
+
+        [SerializeField] private LayerMask unitLayer;
+
         private bool isBusy;
         private void Awake()
         {
@@ -24,10 +29,11 @@ namespace Assets.Assets.Scripts
             }
             Instance = this;
         }
-        //private void Start()
-        //{
-        //    SetSelectedUnit(selectedUnit);
-        //}
+        private void Start()
+        {
+            //SetSelectedUnit(selectedUnit);
+            Unit.OnAnyActionPointsChanged += Unit_OnAnyActionPointsChanged;
+        }
         private void Update()
         {
             if (isBusy) return;
@@ -36,18 +42,25 @@ namespace Assets.Assets.Scripts
             //if (selectedUnit == null) return;
             if (TryHandleUnitSelection()) return;
             HandleSelectedAction();
-           
+
         }
         private void HandleSelectedAction()
         {
             if (Input.GetMouseButtonDown(0))
             {
                 GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
-                if (selectedAction.IsValidActionGridPosition(mouseGridPosition))
+                if (!selectedAction.IsValidActionGridPosition(mouseGridPosition))
                 {
-                    SetBusy();
-                    selectedAction.TakeAction(mouseGridPosition, ClearBusy);
+                    return;
                 }
+                if (!selectedUnit.TrySpendActionPointsToTakeAction(selectedAction))
+                {
+                    return;
+                }
+                SetBusy();
+                selectedAction.TakeAction(mouseGridPosition, ClearBusy);
+                RefreshSelectedActionGridVisual();
+                OnActionStarted?.Invoke(this, EventArgs.Empty);
             }
         }
         private void DeSelectUnit()
@@ -73,7 +86,7 @@ namespace Assets.Assets.Scripts
                 {
                     if (hit.transform.TryGetComponent<Unit>(out var unit))
                     {
-                        if(unit == selectedUnit)
+                        if (unit == selectedUnit)
                             return false;
                         SetSelectedUnit(unit);
                         //GridCellHighlight.Instance.ShowCells(unit.GetMoveAction().GetValidActionGridPositionList(), 2f);
@@ -86,19 +99,29 @@ namespace Assets.Assets.Scripts
         }
         private void SetSelectedUnit(Unit unit)
         {
+
             selectedUnit = unit;
+
             SetSelectedAction(unit.GetMoveAction());
 
-            var moveAction = unit.GetMoveAction();
-            var validPositions = moveAction.GetValidActionGridPositionList();
-
-            GridCellHighlight.Instance.ShowCells(validPositions, 2f);
+            RefreshSelectedActionGridVisual();
 
             OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
         }
         public void SetSelectedAction(BaseAction action)
         {
             selectedAction = action;
+            OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
+            if (action.GetActionPointsCost() > selectedUnit.GetActionPoints())
+            {
+                GridCellHighlight.Instance.Hide();
+                return;
+            }
+            RefreshSelectedActionGridVisual();
+        }
+        public BaseAction GetSelectedAction()
+        {
+            return selectedAction;
         }
         public Unit GetSelectedUnit()
         {
@@ -107,10 +130,34 @@ namespace Assets.Assets.Scripts
         private void SetBusy()
         {
             isBusy = true;
+            OnBusyChanged?.Invoke(this, isBusy);
         }
         private void ClearBusy()
         {
             isBusy = false;
+            OnBusyChanged?.Invoke(this, isBusy);
+            RefreshSelectedActionGridVisual();
+        }
+        private void RefreshSelectedActionGridVisual()
+        {
+            if (selectedAction == null)
+            {
+                GridCellHighlight.Instance.Hide();
+                return;
+            }
+
+            if (selectedAction.GetActionPointsCost() > selectedUnit.GetActionPoints())
+            {
+                GridCellHighlight.Instance.Hide();
+                return;
+            }
+
+            var validPositions = selectedAction.GetValidActionGridPositionList();
+            GridCellHighlight.Instance.ShowCells(validPositions, 2f);
+        }
+        private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
+        {
+            RefreshSelectedActionGridVisual();
         }
     }
 }

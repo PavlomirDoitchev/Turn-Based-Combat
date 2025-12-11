@@ -1,19 +1,27 @@
 ﻿using Assets.Assets.Scripts.Actions;
+using Assets.Assets.Scripts.GameSystems;
 using Assets.Assets.Scripts.Grid;
 using UnityEngine;
-
+using System;
 namespace Assets.Assets.Scripts
 {
     public class Unit : MonoBehaviour
     {
+        private const int ACTION_POINTS_MAX = 2;    
+        public static event EventHandler OnAnyActionPointsChanged;
+
         [Header("References")]
         private GridPosition gridPosition;
         public UnitAnimationSet animationSet;
         private UnitAnimationController animationController;
+
         // Actions
         private MoveAction moveAction;
         private SpinAction spinAction;
         private BaseAction[] baseActionArray;
+
+        [Header("Unit Stats")]
+        [SerializeField] private int actionPoints = ACTION_POINTS_MAX;
 
         private void Awake()
         {
@@ -29,13 +37,17 @@ namespace Assets.Assets.Scripts
 
             animationController.Init(animationSet);
             animationController.Play(AnimationState.Idle);
+
+            TurnSystem.Instance.OnTurnChanged += GetTurnSystem_OnTurnChanged;
+
         }
+
 
         private void Update()
         {
-            
+
             GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
-            if(newGridPosition != gridPosition)
+            if (newGridPosition != gridPosition)
             {
                 LevelGrid.Instance.UnitMoveGridPosition(this, gridPosition, newGridPosition);
                 gridPosition = newGridPosition;
@@ -43,6 +55,31 @@ namespace Assets.Assets.Scripts
         }
         public GridPosition GetGridPosition() => gridPosition;
         public UnitAnimationController GetAnimationController() => animationController;
+        public bool CanSpendActionPointsToTakeAction(BaseAction baseAction) => actionPoints >= baseAction.GetActionPointsCost();
+        private void SpendActionPoints(int amount)
+        {
+            actionPoints -= amount;
+            OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+        }
+        private void GetTurnSystem_OnTurnChanged(object sender, EventArgs e)
+        {
+            actionPoints = ACTION_POINTS_MAX;
+            OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+        }
+        public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)
+        {
+            if (CanSpendActionPointsToTakeAction(baseAction))
+            {
+                SpendActionPoints(baseAction.GetActionPointsCost());
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public int GetActionPoints() => actionPoints;  
+
         // Expose Actions
         public MoveAction GetMoveAction() => moveAction;
         public SpinAction GetSpinAction() => spinAction;

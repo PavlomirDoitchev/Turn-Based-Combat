@@ -47,7 +47,6 @@ namespace Assets.Assets.Scripts.Actions
                 {
                     isMoving = false;
                     unit.GetAnimationController().Play(AnimationState.Idle);
-                    //GridCellHighlight.Instance.ShowCells(GetValidActionGridPositionList(), 2f);
                     isActive = false;
                     onActionComplete();
                 }

@@ -38,5 +38,9 @@ namespace Assets.Assets.Scripts.Actions
         {
             return "Spin";
         }
+        public override int GetActionPointsCost()
+        {
+            return 2;
+        }
     }
 }
