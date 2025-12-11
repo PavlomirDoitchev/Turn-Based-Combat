@@ -1,19 +1,21 @@
 ﻿using UnityEngine;
 using System;
 using Assets.Assets.Scripts.Grid;
+using Assets.Assets.Scripts.Actions;
+using UnityEngine.EventSystems;
 namespace Assets.Assets.Scripts
 {
     public class UnitActionSystem : MonoBehaviour
     {
         public static UnitActionSystem Instance { get; private set; }
         public event EventHandler OnSelectedUnitChanged;
-        [SerializeField] private Unit selectedUnit;
+        private Unit selectedUnit;
         [SerializeField] private LayerMask unitLayer;
-
+        private BaseAction selectedAction;
         private bool isBusy;
         private void Awake()
         {
-            //selectedUnit = null;
+            selectedUnit = null;
             if (Instance != null)
             {
                 Debug.LogError("There is more than one UnitActionSystem! " + transform + " - " + Instance);
@@ -22,35 +24,32 @@ namespace Assets.Assets.Scripts
             }
             Instance = this;
         }
+        //private void Start()
+        //{
+        //    SetSelectedUnit(selectedUnit);
+        //}
         private void Update()
         {
             if (isBusy) return;
-
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+            DeSelectUnit();
+            //if (selectedUnit == null) return;
+            if (TryHandleUnitSelection()) return;
+            HandleSelectedAction();
+           
+        }
+        private void HandleSelectedAction()
+        {
             if (Input.GetMouseButtonDown(0))
             {
-                if (TryHandleUnitSelection()) return;
-                // Block moving the unit while it is already moving
-                //if (selectedUnit != null && !selectedUnit.IsMoving)
-                //    selectedUnit?.Move(targetPosition: Mouseworld.GetPosition());
-
                 GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
-                if (selectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition))
+                if (selectedAction.IsValidActionGridPosition(mouseGridPosition))
                 {
                     SetBusy();
-                    selectedUnit?.GetMoveAction().Move(mouseGridPosition, ClearBusy);
+                    selectedAction.TakeAction(mouseGridPosition, ClearBusy);
                 }
             }
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (selectedUnit != null)
-                {
-                    SetBusy();
-                    selectedUnit.GetSpinAction().Spin(ClearBusy);
-                }
-            }
-            DeSelectUnit();
         }
-
         private void DeSelectUnit()
         {
             if (Input.GetMouseButtonDown(1))
@@ -66,15 +65,20 @@ namespace Assets.Assets.Scripts
             // Block selecting anything while the selected unit is moving
             //if (selectedUnit != null && selectedUnit.IsMoving)
             //    return false;
-
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, unitLayer))
+            if (Input.GetMouseButtonDown(0))
             {
-                if (hit.transform.TryGetComponent<Unit>(out var unit))
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, unitLayer))
                 {
-                    SetSelectedUnit(unit);
-                    return true;
+                    if (hit.transform.TryGetComponent<Unit>(out var unit))
+                    {
+                        if(unit == selectedUnit)
+                            return false;
+                        SetSelectedUnit(unit);
+                        //GridCellHighlight.Instance.ShowCells(unit.GetMoveAction().GetValidActionGridPositionList(), 2f);
+                        return true;
+                    }
                 }
             }
 
@@ -83,6 +87,7 @@ namespace Assets.Assets.Scripts
         private void SetSelectedUnit(Unit unit)
         {
             selectedUnit = unit;
+            SetSelectedAction(unit.GetMoveAction());
 
             var moveAction = unit.GetMoveAction();
             var validPositions = moveAction.GetValidActionGridPositionList();
@@ -90,6 +95,10 @@ namespace Assets.Assets.Scripts
             GridCellHighlight.Instance.ShowCells(validPositions, 2f);
 
             OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
+        }
+        public void SetSelectedAction(BaseAction action)
+        {
+            selectedAction = action;
         }
         public Unit GetSelectedUnit()
         {

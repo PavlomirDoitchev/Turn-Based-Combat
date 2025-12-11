@@ -2,7 +2,7 @@
 using Assets.Assets.Scripts;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System;
 namespace Assets.Assets.Scripts.UI
 {
     public class UnitActionSystemUI : MonoBehaviour
@@ -12,16 +12,27 @@ namespace Assets.Assets.Scripts.UI
 
         private void Start()
         {
+            UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
             CreateUnitActionButtons();
         }
         private void CreateUnitActionButtons() 
         {
-            Assets.Scripts.Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+            
+            foreach (Transform buttonTransform in actionButtonContainterTransform)
+            {
+                Destroy(buttonTransform.gameObject);
+            }
+            Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
             foreach(BaseAction baseAction in selectedUnit.GetBaseActionArray())
             {
-                Instantiate(actionButtonPrefab, actionButtonContainterTransform);
+                Transform actionButtonTransform = Instantiate(actionButtonPrefab, actionButtonContainterTransform);
+                ActionButtonUI actionButtonUI = actionButtonTransform.GetComponent<ActionButtonUI>();
+                actionButtonUI.SetBaseAction(baseAction);
             }
         }
-        
+        private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e) 
+        {
+            CreateUnitActionButtons();
+        }
     }
 }

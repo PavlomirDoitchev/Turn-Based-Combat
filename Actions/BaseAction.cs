@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Assets.Scripts.Actions
@@ -12,6 +13,14 @@ namespace Assets.Assets.Scripts.Actions
         protected virtual void Awake()
         {
             unit = GetComponent<Unit>();
+        }
+        public abstract string GetActionName();
+        public abstract void TakeAction(GridPosition gridPosition, Action onActionComplete);
+        public abstract List<GridPosition> GetValidActionGridPositionList();
+        public virtual bool IsValidActionGridPosition(GridPosition gridPosition)
+        {
+            List<GridPosition> validGridPositionList = GetValidActionGridPositionList();
+            return validGridPositionList.Contains(gridPosition);
         }
     }
 }

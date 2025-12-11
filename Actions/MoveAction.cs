@@ -32,7 +32,7 @@ namespace Assets.Assets.Scripts.Actions
 
             if (dist > stoppingDistance)
             {
-                GridCellHighlight.Instance.Hide();
+                //GridCellHighlight.Instance.Hide();
                 if (!isMoving)
                 {
                     isMoving = true;
@@ -47,25 +47,21 @@ namespace Assets.Assets.Scripts.Actions
                 {
                     isMoving = false;
                     unit.GetAnimationController().Play(AnimationState.Idle);
-                    GridCellHighlight.Instance.ShowCells(GetValidActionGridPositionList(), 2f);
+                    //GridCellHighlight.Instance.ShowCells(GetValidActionGridPositionList(), 2f);
                     isActive = false;
                     onActionComplete();
                 }
             }
             transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
         }
-        public void Move(GridPosition gridPosition, Action onActionComplete)
+        public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
         {
             this.onActionComplete = onActionComplete;
             this.targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
             isActive = true;
         }
-        public bool IsValidActionGridPosition(GridPosition gridPosition)
-        {
-            List<GridPosition> validGridPositionList = GetValidActionGridPositionList();
-            return validGridPositionList.Contains(gridPosition);
-        }
-        public List<GridPosition> GetValidActionGridPositionList()
+        
+        public override List<GridPosition> GetValidActionGridPositionList()
         {
             List<GridPosition> validGridPositionList = new List<GridPosition>();
             GridPosition unitGridPosition = unit.GetGridPosition();
@@ -77,7 +73,7 @@ namespace Assets.Assets.Scripts.Actions
                     GridPosition offsetGridPosition = new GridPosition(x, z);
                     GridPosition testGridPosition = unitGridPosition + offsetGridPosition;
                     if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition))
-                    {
+                    { 
                         continue;
                     }
 
@@ -99,5 +95,12 @@ namespace Assets.Assets.Scripts.Actions
             }
             return validGridPositionList;
         }
+
+        public override string GetActionName()
+        {
+            return "Move";
+        }
+
+        
     }
 }
