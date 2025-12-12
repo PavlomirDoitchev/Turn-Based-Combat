@@ -65,6 +65,13 @@ namespace Assets.Assets.Scripts.UI
         private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e)
         {
             Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
+            if (selectedUnit == null)
+            {
+                portraitCamera.SetUnit(null);
+                portraitCamera.transform.position = new Vector3(0, -100, 0);
+
+
+            }
             portraitCamera.SetUnit(selectedUnit);
 
             CreateUnitActionButtons();

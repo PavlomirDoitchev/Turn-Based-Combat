@@ -11,6 +11,7 @@ namespace Assets.Assets.Scripts
         public static event EventHandler OnAnyActionPointsChanged;
 
         [Header("References")]
+        [SerializeField] private GameObject portrait;
         private GridPosition gridPosition;
         public UnitAnimationSet animationSet;
         private UnitAnimationController animationController;
@@ -39,6 +40,7 @@ namespace Assets.Assets.Scripts
             animationController.Play(AnimationState.Idle);
 
             TurnSystem.Instance.OnTurnChanged += GetTurnSystem_OnTurnChanged;
+            UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
 
         }
 
@@ -76,6 +78,17 @@ namespace Assets.Assets.Scripts
             else
             {
                 return false;
+            }
+        }
+        private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e)
+        {
+            if (UnitActionSystem.Instance.GetSelectedUnit() == this)
+            {
+                portrait.gameObject.SetActive(true);
+            }
+            else
+            {
+                portrait.gameObject.SetActive(false);
             }
         }
         public int GetActionPoints() => actionPoints;  
