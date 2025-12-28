@@ -7,9 +7,10 @@ namespace Assets.Assets.Scripts
 {
     public class Unit : MonoBehaviour
     {
-        private const int ACTION_POINTS_MAX = 2;    
+        private const int ACTION_POINTS_MAX = 2;
         public static event EventHandler OnAnyActionPointsChanged;
-
+        [SerializeField] private bool isNPC;
+        [SerializeField] private bool isEnemy;
         [Header("References")]
         [SerializeField] private GameObject portrait;
         private GridPosition gridPosition;
@@ -65,8 +66,12 @@ namespace Assets.Assets.Scripts
         }
         private void GetTurnSystem_OnTurnChanged(object sender, EventArgs e)
         {
-            actionPoints = ACTION_POINTS_MAX;
-            OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+            if ((IsNPC() && !TurnSystem.Instance.IsPlayerTurn()) ||
+                (!IsNPC() && TurnSystem.Instance.IsPlayerTurn()))
+            {
+                actionPoints = ACTION_POINTS_MAX;
+                OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
         public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)
         {
@@ -82,6 +87,10 @@ namespace Assets.Assets.Scripts
         }
         private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs e)
         {
+            if (portrait == null)
+            {
+                return;
+            }
             if (UnitActionSystem.Instance.GetSelectedUnit() == this)
             {
                 portrait.gameObject.SetActive(true);
@@ -91,11 +100,13 @@ namespace Assets.Assets.Scripts
                 portrait.gameObject.SetActive(false);
             }
         }
-        public int GetActionPoints() => actionPoints;  
+        public int GetActionPoints() => actionPoints;
 
         // Expose Actions
         public MoveAction GetMoveAction() => moveAction;
         public SpinAction GetSpinAction() => spinAction;
         public BaseAction[] GetBaseActionArray() => baseActionArray;
+        public bool IsNPC() => isNPC;
+        public bool IsEnemy() => isEnemy;
     }
 }

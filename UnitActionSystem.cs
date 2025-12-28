@@ -3,6 +3,7 @@ using System;
 using Assets.Assets.Scripts.Grid;
 using Assets.Assets.Scripts.Actions;
 using UnityEngine.EventSystems;
+using Assets.Assets.Scripts.GameSystems;
 namespace Assets.Assets.Scripts
 {
     public class UnitActionSystem : MonoBehaviour
@@ -37,6 +38,7 @@ namespace Assets.Assets.Scripts
         private void Update()
         {
             if (isBusy) return;
+            if (!TurnSystem.Instance.IsPlayerTurn()) return;
             if (EventSystem.current.IsPointerOverGameObject()) return;
             DeSelectUnit();
             //if (selectedUnit == null) return;
@@ -49,7 +51,7 @@ namespace Assets.Assets.Scripts
             if (Input.GetMouseButtonDown(0) && selectedUnit != null)
             {
                 GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
-                
+
                 if (!selectedAction.IsValidActionGridPosition(mouseGridPosition))
                 {
                     return;
@@ -76,7 +78,7 @@ namespace Assets.Assets.Scripts
 
         private bool TryHandleUnitSelection()
         {
-            
+
             if (Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -87,6 +89,10 @@ namespace Assets.Assets.Scripts
                     {
                         if (unit == selectedUnit)
                             return false;
+
+                        if (unit.IsNPC())
+                            return false;
+
                         SetSelectedUnit(unit);
                         //GridCellHighlight.Instance.ShowCells(unit.GetMoveAction().GetValidActionGridPositionList(), 2f);
                         return true;
@@ -139,13 +145,18 @@ namespace Assets.Assets.Scripts
         }
         private void RefreshSelectedActionGridVisual()
         {
+            if (TurnSystem.Instance.IsPlayerTurn() == false && selectedUnit != null)
+            {
+                GridCellHighlight.Instance.Hide();
+                return;
+            }
             if (selectedAction == null)
             {
                 GridCellHighlight.Instance.Hide();
                 return;
             }
 
-            if (selectedAction.GetActionPointsCost() > selectedUnit.GetActionPoints())
+            if (TurnSystem.Instance.IsPlayerTurn() && selectedAction.GetActionPointsCost() > selectedUnit.GetActionPoints())
             {
                 GridCellHighlight.Instance.Hide();
                 return;
