@@ -71,6 +71,7 @@ namespace Assets.Assets.Scripts
             if (Input.GetMouseButtonDown(1))
             {
                 selectedUnit = null;
+                selectedAction = null;
                 GridCellHighlight.Instance.Hide();
                 OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
             }

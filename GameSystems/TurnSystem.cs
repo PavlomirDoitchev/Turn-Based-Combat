@@ -22,8 +22,10 @@ namespace Assets.Assets.Scripts.GameSystems
         }
         public void NextTurn() 
         {
-            turnNumber++;
             isPlayerTurn = !isPlayerTurn;
+            if(isPlayerTurn)
+                turnNumber++;
+
             OnTurnChanged?.Invoke(this, EventArgs.Empty);
         }
         public int GetTurnNumber()
