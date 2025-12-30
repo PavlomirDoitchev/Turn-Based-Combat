@@ -43,5 +43,16 @@ namespace Assets.Assets.Scripts.Grid
         {
             return unitList.Count > 0;
         }
+        public Unit GetUnit() 
+        {
+            if(HasAnyUnit())
+            {
+                return unitList[0];
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

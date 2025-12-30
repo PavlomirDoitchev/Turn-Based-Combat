@@ -5,7 +5,6 @@ using System;
 
 namespace Assets.Assets.Scripts.Actions
 {
-    // Attach this to Units that can move
     public class MoveAction : BaseAction
     {
         [Header("Stats")]
@@ -46,17 +45,15 @@ namespace Assets.Assets.Scripts.Actions
                 {
                     isMoving = false;
                     unit.GetAnimationController().Play(AnimationState.Idle);
-                    isActive = false;
-                    onActionComplete();
+                    ActionComplete();
                 }
             }
             transform.forward = Vector3.Lerp(transform.forward, moveDirection, Time.deltaTime * rotateSpeed);
         }
         public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
         {
-            this.onActionComplete = onActionComplete;
+            ActionStart(onActionComplete);
             this.targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
-            isActive = true;
         }
         
         public override List<GridPosition> GetValidActionGridPositionList()

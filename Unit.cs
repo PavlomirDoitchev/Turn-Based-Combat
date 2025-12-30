@@ -100,9 +100,12 @@ namespace Assets.Assets.Scripts
                 portrait.gameObject.SetActive(false);
             }
         }
-        public int GetActionPoints() => actionPoints;
-
+        public void Damage(int damageAmount) 
+        {
+            Debug.Log(IsNPC() ? "NPC Unit took " + damageAmount + " damage." : "Player Unit took " + damageAmount + " damage.");
+        }
         // Expose Actions
+        public int GetActionPoints() => actionPoints;
         public MoveAction GetMoveAction() => moveAction;
         public SpinAction GetSpinAction() => spinAction;
         public BaseAction[] GetBaseActionArray() => baseActionArray;
