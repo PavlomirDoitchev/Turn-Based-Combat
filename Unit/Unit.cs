@@ -118,6 +118,8 @@ namespace Assets.Assets.Scripts
         private void HealthSystem_OnDied()
         {
             animationController.Play(AnimationState.Death);
+            LevelGrid.Instance.RemoveUnitAtGridPosition(gridPosition, this);
+            this.GetComponent<BoxCollider>().enabled = false;
         }
         private void OnDestroy()
         {
