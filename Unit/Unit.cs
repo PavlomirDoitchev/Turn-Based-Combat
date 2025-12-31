@@ -13,6 +13,8 @@ namespace Assets.Assets.Scripts
         [SerializeField] private bool isEnemy;
         [Header("References")]
         [SerializeField] private GameObject portrait;
+        [SerializeField] private Transform projectileSpawnPoint;
+        [SerializeField] private HealthSystem healthSystem;
         private GridPosition gridPosition;
         public UnitAnimationSet animationSet;
         private UnitAnimationController animationController;
@@ -27,6 +29,9 @@ namespace Assets.Assets.Scripts
 
         private void Awake()
         {
+            healthSystem.Init();
+            healthSystem.OnDamaged += HealthSystem_OnDamaged;
+            healthSystem.OnDied += HealthSystem_OnDied;
             animationController = GetComponent<UnitAnimationController>();
             moveAction = GetComponent<MoveAction>();
             spinAction = GetComponent<SpinAction>();
@@ -42,6 +47,7 @@ namespace Assets.Assets.Scripts
 
             TurnSystem.Instance.OnTurnChanged += GetTurnSystem_OnTurnChanged;
             UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
+
 
         }
 
@@ -100,9 +106,31 @@ namespace Assets.Assets.Scripts
                 portrait.gameObject.SetActive(false);
             }
         }
-        public void Damage(int damageAmount) 
+        private void HealthSystem_OnDamaged()
         {
-            Debug.Log(IsNPC() ? "NPC Unit took " + damageAmount + " damage." : "Player Unit took " + damageAmount + " damage.");
+            if (healthSystem.GetHealth() > 0)
+            {
+                animationController.Play(AnimationState.Hurt);
+                
+            }
+        }
+
+        private void HealthSystem_OnDied()
+        {
+            animationController.Play(AnimationState.Death);
+        }
+        private void OnDestroy()
+        {
+            healthSystem.OnDamaged -= HealthSystem_OnDamaged;
+            healthSystem.OnDied -= HealthSystem_OnDied;
+        }
+        public void Damage(int damageAmount)
+        {
+            healthSystem.Damage(damageAmount);
+
+            Debug.Log(IsNPC()
+                ? $"NPC Unit took {damageAmount} damage."
+                : $"Player Unit took {damageAmount} damage.");
         }
         // Expose Actions
         public int GetActionPoints() => actionPoints;
@@ -111,5 +139,9 @@ namespace Assets.Assets.Scripts
         public BaseAction[] GetBaseActionArray() => baseActionArray;
         public bool IsNPC() => isNPC;
         public bool IsEnemy() => isEnemy;
+        public Transform GetProjectileSpawnPoint()
+        {
+            return projectileSpawnPoint != null ? projectileSpawnPoint : transform;
+        }
     }
 }

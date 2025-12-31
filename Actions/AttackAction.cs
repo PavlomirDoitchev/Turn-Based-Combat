@@ -2,11 +2,19 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Rendering.CameraUI;
 
 namespace Assets.Assets.Scripts.Actions
 {
     public class AttackAction : BaseAction
     {
+        [Flags]
+        private enum AttackType
+        {
+            None = 0,
+            Melee = 1 << 0,
+            Ranged = 1 << 1,
+        }
         private enum State
         {
             Aiming,
@@ -14,8 +22,11 @@ namespace Assets.Assets.Scripts.Actions
             Cooloff
         }
         public delegate void SpinCompleteDelegate();
-        [SerializeField] private int attackRange = 7;
+        [SerializeField] private AttackType attackType;
+        [SerializeField] private int meleeAttackRange = 1;
+        [SerializeField] private int attackRange = 4;
         [SerializeField] private float stateTimer = 0.5f;
+        [SerializeField] private ProjectileType projectileType;
         private State state;
 
         private Unit targetUnit;
@@ -26,14 +37,14 @@ namespace Assets.Assets.Scripts.Actions
             {
                 return;
             }
-            stateTimer -= Time.deltaTime;   
-            switch (state) 
+            stateTimer -= Time.deltaTime;
+            switch (state)
             {
                 case State.Aiming:
                     FaceEnemy();
                     break;
                 case State.Attacking:
-                    if(canAttack)
+                    if (canAttack)
                     {
                         Attack();
                         canAttack = false;
@@ -62,7 +73,6 @@ namespace Assets.Assets.Scripts.Actions
                 case State.Cooloff:
                     ActionComplete();
                     unit.GetAnimationController().Play(AnimationState.Idle);
-
                     break;
             }
         }
@@ -102,7 +112,7 @@ namespace Assets.Assets.Scripts.Actions
                     Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(testGridPosition);
 
                     // Check if units are on the same team
-                    if (targetUnit.IsEnemy() == unit.IsEnemy()) 
+                    if (targetUnit.IsEnemy() == unit.IsEnemy())
                     {
                         continue;
                     }
@@ -118,7 +128,7 @@ namespace Assets.Assets.Scripts.Actions
             ActionStart(onActionComplete);
             targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
             state = State.Aiming;
-            float aimingStateTime = .5f;
+            float aimingStateTime = .25f;
             stateTimer = aimingStateTime;
 
             canAttack = true;
@@ -131,7 +141,20 @@ namespace Assets.Assets.Scripts.Actions
         private void Attack()
         {
             unit.GetAnimationController().Play(AnimationState.Attack);
-            targetUnit.Damage(40);
+
+            if (attackType.HasFlag(AttackType.Ranged))
+            {
+                ProjectileManager.Instance.Fire(
+                projectileType,
+                unit.GetProjectileSpawnPoint(),
+                targetUnit,
+                () => targetUnit.Damage(40)
+                );
+            }
+            else
+            {
+                targetUnit.Damage(40);
+            }
         }
     }
 }

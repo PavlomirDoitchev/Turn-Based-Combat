@@ -5,5 +5,6 @@
     Run,
     Attack,
     Death,
-    Spin,
+    Hurt,
+    Stunned
 }
