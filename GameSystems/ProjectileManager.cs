@@ -6,7 +6,7 @@ using UnityEngine;
 public enum ProjectileType
 {
     Arrow,
-    Fireball,
+    SpellProjectile,
     Ice
 }
 
@@ -15,7 +15,7 @@ public class ProjectileManager : MonoBehaviour
     public static ProjectileManager Instance;
 
     [SerializeField] private ProjectileBase arrow;
-    //[SerializeField] private ProjectileBase fireball;
+    [SerializeField] private ProjectileBase spellProjectile;
     //[SerializeField] private ProjectileBase ice;
 
     private Dictionary<ProjectileType, ProjectileBase> map;
@@ -26,7 +26,7 @@ public class ProjectileManager : MonoBehaviour
         map = new Dictionary<ProjectileType, ProjectileBase>
         {
             { ProjectileType.Arrow, arrow },
-            //{ ProjectileType.Fireball, fireball },
+            { ProjectileType.SpellProjectile, spellProjectile },
             //{ ProjectileType.Ice, ice }
         };
 
