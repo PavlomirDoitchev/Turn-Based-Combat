@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Rendering.CameraUI;
 
 namespace Assets.Assets.Scripts.Actions
 {
@@ -21,7 +20,6 @@ namespace Assets.Assets.Scripts.Actions
             Attacking,
             Cooloff
         }
-        public delegate void SpinCompleteDelegate();
         [SerializeField] private AttackType attackType;
         [SerializeField] private int meleeAttackRange = 1;
         [SerializeField] private int attackRange = 4;

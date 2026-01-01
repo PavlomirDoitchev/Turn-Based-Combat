@@ -68,36 +68,52 @@ namespace Assets.Assets.Scripts
         }
         private void DeSelectUnit()
         {
-            if (Input.GetMouseButtonDown(1))
-            {
-                selectedUnit = null;
-                selectedAction = null;
-                GridCellHighlight.Instance.Hide();
-                OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
-            }
+            if (!Input.GetMouseButtonDown(1))
+                return;
+
+            if (selectedUnit == null)
+                return;
+            if (isBusy) return;
+
+            selectedUnit = null;
+            selectedAction = null;
+
+            GridCellHighlight.Instance.Hide();
+            OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private bool TryHandleUnitSelection()
         {
+            if (!Input.GetMouseButtonDown(0))
+                return false;
 
-            if (Input.GetMouseButtonDown(0))
+            // If we have a selected action, check if click is meant for action targeting
+            if (selectedAction != null && selectedUnit != null)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                GridPosition mouseGridPosition =
+                    LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
 
-                if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, unitLayer))
+                if (selectedAction.IsValidActionGridPosition(mouseGridPosition))
                 {
-                    if (hit.transform.TryGetComponent<Unit>(out var unit))
-                    {
-                        if (unit == selectedUnit)
-                            return false;
+                    // Action targeting has priority over unit selection
+                    return false;
+                }
+            }
 
-                        if (unit.IsNPC())
-                            return false;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                        SetSelectedUnit(unit);
-                        //GridCellHighlight.Instance.ShowCells(unit.GetMoveAction().GetValidActionGridPositionList(), 2f);
-                        return true;
-                    }
+            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue, unitLayer))
+            {
+                if (hit.transform.TryGetComponent<Unit>(out var unit))
+                {
+                    if (unit == selectedUnit)
+                        return false;
+
+                    if (unit.IsNPC())
+                        return false;
+
+                    SetSelectedUnit(unit);
+                    return true;
                 }
             }
 
