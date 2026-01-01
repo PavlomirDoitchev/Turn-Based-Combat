@@ -14,6 +14,7 @@ public class GridCellHighlight : MonoBehaviour
     private MeshCollider meshCollider;
     private Material material;
     private List<GridPosition> currentGridPositions;
+    private int clickedQuadIndex = -1;
     private void Awake()
     {
         Instance = this;
@@ -53,8 +54,29 @@ public class GridCellHighlight : MonoBehaviour
             LevelGrid.Instance.GetGridPosition(mouseWorldPosition);
 
         int index = currentGridPositions.IndexOf(mouseGridPosition);
-
         material.SetInt("_HoveredQuad", index);
+    }
+
+    public void SetActionColor(Color color)
+    {
+        material.SetColor("_ActionColor", color);
+    }
+    public void ConfirmActionAt(GridPosition gridPosition)
+    {
+        if (currentGridPositions == null)
+            return;
+
+        clickedQuadIndex = currentGridPositions.IndexOf(gridPosition);
+        material.SetInt("_ClickedQuad", clickedQuadIndex);
+
+        CancelInvoke(nameof(ClearClick));
+        Invoke(nameof(ClearClick), 0.2f);
+    }
+
+    private void ClearClick()
+    {
+        clickedQuadIndex = -1;
+        material.SetInt("_ClickedQuad", -1);
     }
     private void BuildMesh(List<GridPosition> positions)
     {

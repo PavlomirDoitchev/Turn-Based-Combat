@@ -62,6 +62,7 @@ namespace Assets.Assets.Scripts
                     return;
                 }
                 SetBusy();
+                GridCellHighlight.Instance.ConfirmActionAt(mouseGridPosition);
                 selectedAction.TakeAction(mouseGridPosition, ClearBusy);
                 RefreshSelectedActionGridVisual();
                 OnActionStarted?.Invoke(this, EventArgs.Empty);
@@ -135,11 +136,17 @@ namespace Assets.Assets.Scripts
         {
             selectedAction = action;
             OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
+
+            GridCellHighlight.Instance.SetActionColor(
+                GetActionColor(action)
+            );
+
             //if (action.GetActionPointsCost() > selectedUnit.GetActionPoints())
             //{
             //    GridCellHighlight.Instance.Hide();
             //    return;
             //}
+
             RefreshSelectedActionGridVisual();
         }
         public BaseAction GetSelectedAction()
@@ -161,6 +168,7 @@ namespace Assets.Assets.Scripts
             OnBusyChanged?.Invoke(this, isBusy);
             RefreshSelectedActionGridVisual();
         }
+        #region Grid Visuals
         private void RefreshSelectedActionGridVisual()
         {
             if (TurnSystem.Instance.IsPlayerTurn() == false && selectedUnit != null)
@@ -183,6 +191,17 @@ namespace Assets.Assets.Scripts
             var validPositions = selectedAction.GetValidActionGridPositionList();
             GridCellHighlight.Instance.ShowCells(validPositions, 2f);
         }
+        private Color GetActionColor(BaseAction action)
+        {
+            return action switch
+            {
+                MoveAction => new Color(0.3f, 0.6f, 0f, 0.6f),
+                AttackAction => new Color(1f, 0.3f, 0.3f, 0.6f),
+                HealAction => new Color(0.3f, 1f, 0.3f, 0.6f),
+                _ => Color.white
+            };
+        }
+        #endregion
         private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
         {
             RefreshSelectedActionGridVisual();
