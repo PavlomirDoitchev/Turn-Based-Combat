@@ -134,11 +134,13 @@ namespace Assets.Assets.Scripts
                 ? $"NPC Unit took {damageAmount} damage."
                 : $"Player Unit took {damageAmount} damage.");
         }
-        // Expose Actions
+        #region Expose Actions
         public int GetActionPoints() => actionPoints;
         public MoveAction GetMoveAction() => moveAction;
         public SpinAction GetSpinAction() => spinAction;
         public BaseAction[] GetBaseActionArray() => baseActionArray;
+        #endregion
+        public HealthSystem GetHealthSystem() => healthSystem;
         public bool IsNPC() => isNPC;
         public bool IsEnemy() => isEnemy;
         public Transform GetProjectileSpawnPoint()
