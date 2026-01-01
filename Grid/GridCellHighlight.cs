@@ -12,25 +12,28 @@ public class GridCellHighlight : MonoBehaviour
 
     private float cellSize;
     private MeshCollider meshCollider;
+    private Material material;
+    private List<GridPosition> currentGridPositions;
     private void Awake()
     {
         Instance = this;
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         meshCollider = gameObject.AddComponent<MeshCollider>();
+        material = GetComponent<MeshRenderer>().material;
     }
 
     public void ShowCells(List<GridPosition> gridPositions, float cellSize)
     {
         this.cellSize = cellSize;
+        currentGridPositions = gridPositions;
         BuildMesh(gridPositions);
-        meshCollider.sharedMesh = null;
 
+        meshCollider.sharedMesh = null;
         if (vertices.Length > 0)
         {
             meshCollider.sharedMesh = mesh;
         }
-
     }
 
     public void Hide()
@@ -38,7 +41,21 @@ public class GridCellHighlight : MonoBehaviour
         mesh.Clear();
         meshCollider.sharedMesh = null;
     }
+    public void UpdateHover(Vector3 mouseWorldPosition)
+    {
+        if (currentGridPositions == null)
+        {
+            material.SetInt("_HoveredQuad", -1);
+            return;
+        }
 
+        GridPosition mouseGridPosition =
+            LevelGrid.Instance.GetGridPosition(mouseWorldPosition);
+
+        int index = currentGridPositions.IndexOf(mouseGridPosition);
+
+        material.SetInt("_HoveredQuad", index);
+    }
     private void BuildMesh(List<GridPosition> positions)
     {
         int quadCount = positions.Count;

@@ -40,6 +40,7 @@ namespace Assets.Assets.Scripts
             if (isBusy) return;
             if (!TurnSystem.Instance.IsPlayerTurn()) return;
             if (EventSystem.current.IsPointerOverGameObject()) return;
+            GridCellHighlight.Instance.UpdateHover(Mouseworld.GetPosition());
             DeSelectUnit();
             //if (selectedUnit == null) return;
             if (TryHandleUnitSelection()) return;
@@ -134,11 +135,11 @@ namespace Assets.Assets.Scripts
         {
             selectedAction = action;
             OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
-            if (action.GetActionPointsCost() > selectedUnit.GetActionPoints())
-            {
-                GridCellHighlight.Instance.Hide();
-                return;
-            }
+            //if (action.GetActionPointsCost() > selectedUnit.GetActionPoints())
+            //{
+            //    GridCellHighlight.Instance.Hide();
+            //    return;
+            //}
             RefreshSelectedActionGridVisual();
         }
         public BaseAction GetSelectedAction()
@@ -173,7 +174,7 @@ namespace Assets.Assets.Scripts
                 return;
             }
 
-            if (TurnSystem.Instance.IsPlayerTurn() && selectedAction.GetActionPointsCost() > selectedUnit.GetActionPoints())
+            if (TurnSystem.Instance.IsPlayerTurn() && selectedAction.GetActionPointsCost() > selectedUnit.GetActionPoints() && !isBusy)
             {
                 GridCellHighlight.Instance.Hide();
                 return;
