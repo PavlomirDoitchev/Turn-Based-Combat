@@ -34,7 +34,7 @@ namespace Assets.Assets.Scripts.GameSystems
             health = Mathf.Max(health, 0);
             OnHealthChanged?.Invoke(health, maxHealth);
             OnDamaged?.Invoke();
-            if (health == 0)
+            if (health <= 0)
             {
                 Die();
             }

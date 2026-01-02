@@ -129,7 +129,7 @@ namespace Assets.Assets.Scripts.Actions
 
                     Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(testGridPosition);
 
-                    // ✅ Only heal allies
+                    // Only heal allies
                     if (targetUnit.IsEnemy() != unit.IsEnemy())
                         continue;
 

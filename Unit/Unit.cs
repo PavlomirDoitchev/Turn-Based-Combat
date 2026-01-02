@@ -9,6 +9,8 @@ namespace Assets.Assets.Scripts
     {
         private const int ACTION_POINTS_MAX = 2;
         public static event EventHandler OnAnyActionPointsChanged;
+        public static event EventHandler OnAnyUnitSpawned;
+        public static event EventHandler OnAnyUnitDead;
         [SerializeField] private bool isNPC;
         [SerializeField] private bool isEnemy;
         [Header("References")]
@@ -22,7 +24,12 @@ namespace Assets.Assets.Scripts
         // Actions
         private MoveAction moveAction;
         private SpinAction spinAction;
+        private AttackAction attackAction;
+        private HealAction healAction;
         private BaseAction[] baseActionArray;
+        private bool hasTakenTurn;
+        public bool HasTakenTurn => hasTakenTurn;
+
 
         [Header("Unit Stats")]
         [SerializeField] private int actionPoints = ACTION_POINTS_MAX;
@@ -35,6 +42,8 @@ namespace Assets.Assets.Scripts
             animationController = GetComponent<UnitAnimationController>();
             moveAction = GetComponent<MoveAction>();
             spinAction = GetComponent<SpinAction>();
+            attackAction = GetComponent<AttackAction>();
+            healAction = GetComponent<HealAction>();
             baseActionArray = GetComponents<BaseAction>();
         }
         private void Start()
@@ -47,6 +56,7 @@ namespace Assets.Assets.Scripts
 
             TurnSystem.Instance.OnTurnChanged += GetTurnSystem_OnTurnChanged;
             UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
+            OnAnyUnitSpawned?.Invoke(this, EventArgs.Empty);
 
 
         }
@@ -62,6 +72,17 @@ namespace Assets.Assets.Scripts
                 gridPosition = newGridPosition;
             }
         }
+
+        public void StartTurn()
+        {
+            hasTakenTurn = false;
+            actionPoints = ACTION_POINTS_MAX;
+            OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+        }
+        public void EndTurn()
+        {
+            hasTakenTurn = true;
+        }
         public GridPosition GetGridPosition() => gridPosition;
         public UnitAnimationController GetAnimationController() => animationController;
         public bool CanSpendActionPointsToTakeAction(BaseAction baseAction) => actionPoints >= baseAction.GetActionPointsCost();
@@ -70,6 +91,7 @@ namespace Assets.Assets.Scripts
             actionPoints -= amount;
             OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
         }
+
         private void GetTurnSystem_OnTurnChanged(object sender, EventArgs e)
         {
             if ((IsNPC() && !TurnSystem.Instance.IsPlayerTurn()) ||
@@ -120,6 +142,7 @@ namespace Assets.Assets.Scripts
             animationController.Play(AnimationState.Death);
             LevelGrid.Instance.RemoveUnitAtGridPosition(gridPosition, this);
             this.GetComponent<BoxCollider>().enabled = false;
+            OnAnyUnitDead?.Invoke(this, EventArgs.Empty);   
         }
         private void OnDestroy()
         {
@@ -134,15 +157,20 @@ namespace Assets.Assets.Scripts
                 ? $"NPC Unit took {damageAmount} damage."
                 : $"Player Unit took {damageAmount} damage.");
         }
+
         #region Expose Actions
         public int GetActionPoints() => actionPoints;
         public MoveAction GetMoveAction() => moveAction;
         public SpinAction GetSpinAction() => spinAction;
+        public AttackAction GetAttackAction() => attackAction;
+        public HealAction GetHealAction() => healAction;
         public BaseAction[] GetBaseActionArray() => baseActionArray;
         #endregion
+
         public HealthSystem GetHealthSystem() => healthSystem;
         public bool IsNPC() => isNPC;
         public bool IsEnemy() => isEnemy;
+
         public Transform GetProjectileSpawnPoint()
         {
             return projectileSpawnPoint != null ? projectileSpawnPoint : transform;

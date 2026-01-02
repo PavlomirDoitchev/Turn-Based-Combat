@@ -35,12 +35,20 @@ namespace Assets.Assets.Scripts.UI
             healthSystem = unit.GetHealthSystem();
             healthSystem.OnHealthChanged += HealthSystem_OnHealthChanged;
             healthSystem.OnDamaged += HealthSystem_OnDamaged;
+            healthSystem.OnDied += HealthSystem_OnDied;
             healthSystem.OnHealed += HealthSystem_OnHealed;
 
             originalHealthBarColor = healthBarImage.color;
 
             targetFillAmount = healthSystem.GetHealthNormalized();
             healthBarImage.fillAmount = targetFillAmount;
+        }
+        private void Awake()
+        {
+            if (unit.IsNPC()) 
+            {
+                actionPointsText.enabled = false;
+            }
         }
 
         private void Update()
@@ -73,7 +81,12 @@ namespace Assets.Assets.Scripts.UI
         {
             StartFlash(damageFlashColor);
         }
-
+        private void HealthSystem_OnDied() 
+        {
+            healthBarImage.enabled = false;
+            actionPointsText.enabled = false;
+            Destroy(gameObject, .1f);
+        }
         private void HealthSystem_OnHealed()
         {
             StartFlash(healFlashColor);
@@ -98,6 +111,7 @@ namespace Assets.Assets.Scripts.UI
 
         private void OnDestroy()
         {
+            StopAllCoroutines();
             Unit.OnAnyActionPointsChanged -= Unit_OnActionPointsChanged;
 
             if (healthSystem != null)
@@ -105,6 +119,8 @@ namespace Assets.Assets.Scripts.UI
                 healthSystem.OnHealthChanged -= HealthSystem_OnHealthChanged;
                 healthSystem.OnDamaged -= HealthSystem_OnDamaged;
                 healthSystem.OnHealed -= HealthSystem_OnHealed;
+                healthSystem.OnDied -= HealthSystem_OnDied;
+
             }
         }
     }

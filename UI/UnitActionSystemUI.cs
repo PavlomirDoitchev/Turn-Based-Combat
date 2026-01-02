@@ -24,15 +24,15 @@ namespace Assets.Assets.Scripts.UI
             UnitActionSystem.Instance.OnSelectedUnitChanged += UnitActionSystem_OnSelectedUnitChanged;
             UnitActionSystem.Instance.OnSelectedActionChanged += UnitActionSystem_OnSelectedUnitChanged;
             UnitActionSystem.Instance.OnActionStarted += UnitActionSystem_OnActionStarted;
-            TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;  
+            TurnSystem.Instance.OnTurnChanged += TurnSystem_OnTurnChanged;
             Unit.OnAnyActionPointsChanged += Unit_OnAnyActionPointsChanged;
 
             CreateUnitActionButtons();
             UpdateSelectedVisual();
         }
-        private void CreateUnitActionButtons() 
+        private void CreateUnitActionButtons()
         {
-            
+
             foreach (Transform buttonTransform in actionButtonContainterTransform)
             {
                 Destroy(buttonTransform.gameObject);
@@ -41,7 +41,7 @@ namespace Assets.Assets.Scripts.UI
             if (UnitActionSystem.Instance.GetSelectedUnit() == null)
                 return;
             Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
-            foreach(BaseAction baseAction in selectedUnit.GetBaseActionArray())
+            foreach (BaseAction baseAction in selectedUnit.GetBaseActionArray())
             {
                 Transform actionButtonTransform = Instantiate(actionButtonPrefab, actionButtonContainterTransform);
                 ActionButtonUI actionButtonUI = actionButtonTransform.GetComponent<ActionButtonUI>();
@@ -82,14 +82,14 @@ namespace Assets.Assets.Scripts.UI
         {
             UpdateSelectedVisual();
         }
-        private void UpdateSelectedVisual() 
+        private void UpdateSelectedVisual()
         {
-            foreach (ActionButtonUI actionButtonUI in actionButtonsUIList) 
+            foreach (ActionButtonUI actionButtonUI in actionButtonsUIList)
             {
                 actionButtonUI.UpdateSelectedVisual();
             }
         }
-        private void UpdateActionPoints() 
+        private void UpdateActionPoints()
         {
             Unit selectedUnit = UnitActionSystem.Instance.GetSelectedUnit();
             if (selectedUnit != null)

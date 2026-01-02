@@ -20,10 +20,10 @@ namespace Assets.Assets.Scripts.GameSystems
             }
             Instance = this;
         }
-        public void NextTurn() 
+        public void NextTurn()
         {
             isPlayerTurn = !isPlayerTurn;
-            if(isPlayerTurn)
+            if (isPlayerTurn)
                 turnNumber++;
 
             OnTurnChanged?.Invoke(this, EventArgs.Empty);
