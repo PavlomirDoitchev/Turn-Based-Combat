@@ -161,10 +161,11 @@ namespace Assets.Assets.Scripts.Actions
 
         public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
         {
+            Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
             return new EnemyAIAction
             {
                 gridPosition = gridPosition,
-                actionValue = 100
+                actionValue = 100 + Mathf.RoundToInt((1 - targetUnit.GetHealthSystem().GetHealthNormalized()) * 100f) // target low health = higher action value
             };
         }
         public int GetTargetCountAtPosition(GridPosition gridPosition) 
