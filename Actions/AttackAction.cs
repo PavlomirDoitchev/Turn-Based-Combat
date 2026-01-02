@@ -1,4 +1,5 @@
-﻿using Assets.Assets.Scripts.Grid;
+﻿using Assets.Assets.Scripts.AI;
+using Assets.Assets.Scripts.Grid;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -78,11 +79,14 @@ namespace Assets.Assets.Scripts.Actions
         {
             return "Attack";
         }
-
-        public override List<GridPosition> GetValidActionGridPositionList()
+        public override List<GridPosition> GetValidActionGridPositionList() 
+        {
+            GridPosition unitGridPosition = unit.GetGridPosition();
+            return GetValidActionGridPositionList(unitGridPosition);
+        }
+        public List<GridPosition> GetValidActionGridPositionList(GridPosition unitGridPosition)
         {
             List<GridPosition> validGridPositionList = new List<GridPosition>();
-            GridPosition unitGridPosition = unit.GetGridPosition();
 
             for (int x = -attackRange; x <= attackRange; x++)
             {
@@ -153,6 +157,19 @@ namespace Assets.Assets.Scripts.Actions
             {
                 targetUnit.Damage(40);
             }
+        }
+
+        public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+        {
+            return new EnemyAIAction
+            {
+                gridPosition = gridPosition,
+                actionValue = 100
+            };
+        }
+        public int GetTargetCountAtPosition(GridPosition gridPosition) 
+        {
+            return GetValidActionGridPositionList(gridPosition).Count;
         }
     }
 }

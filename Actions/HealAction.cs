@@ -1,4 +1,5 @@
-﻿using Assets.Assets.Scripts.Grid;
+﻿using Assets.Assets.Scripts.AI;
+using Assets.Assets.Scripts.Grid;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -142,6 +143,11 @@ namespace Assets.Assets.Scripts.Actions
             }
 
             return validGridPositionList;
+        }
+
+        public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+        {
+            throw new NotImplementedException();
         }
     }
 }

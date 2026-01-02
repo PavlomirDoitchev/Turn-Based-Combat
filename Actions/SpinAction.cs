@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Assets.Scripts.AI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -41,6 +42,15 @@ namespace Assets.Assets.Scripts.Actions
         public override int GetActionPointsCost()
         {
             return 1;
+        }
+
+        public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+        {
+            return new EnemyAIAction
+            {
+                gridPosition = gridPosition,
+                actionValue = 0
+            };
         }
     }
 }

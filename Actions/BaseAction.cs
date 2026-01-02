@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Assets.Assets.Scripts.AI;
 namespace Assets.Assets.Scripts.Actions
 {
     public abstract class BaseAction : MonoBehaviour
@@ -36,5 +36,27 @@ namespace Assets.Assets.Scripts.Actions
             isActive = false;
             onActionComplete();
         }
+        public Unit GetUnit()
+        {
+            return unit;
+        }
+        public EnemyAIAction GetBestEnemyAIAction()
+        {
+            List<EnemyAIAction> enemyAIActions = new List<EnemyAIAction>();
+            List<GridPosition> validGridPositionList = GetValidActionGridPositionList();
+            foreach (GridPosition gridPosition in validGridPositionList)
+            {
+                EnemyAIAction enemyAIAction = GetEnemyAIAction(gridPosition);
+                enemyAIActions.Add(enemyAIAction);
+            }
+            if (enemyAIActions.Count > 0) // Has possible actions
+            {
+                enemyAIActions.Sort((a, b) => b.actionValue - a.actionValue); // Decision making: choose the action with the highest action value
+                return enemyAIActions[0];
+            }
+            else // No possible action
+                return null;
+        }
+        public abstract EnemyAIAction GetEnemyAIAction(GridPosition gridPosition);
     }
 }

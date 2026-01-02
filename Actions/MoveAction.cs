@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.Assets.Scripts.Grid;
 using System;
+using Assets.Assets.Scripts.AI;
 
 namespace Assets.Assets.Scripts.Actions
 {
@@ -96,6 +97,14 @@ namespace Assets.Assets.Scripts.Actions
             return "Move";
         }
 
-        
+        public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+        {
+            int targetCountAtGridPosition = unit.GetAttackAction().GetTargetCountAtPosition(gridPosition);
+            return new EnemyAIAction
+            {
+                gridPosition = gridPosition,
+                actionValue = targetCountAtGridPosition * 10,
+            };
+        }
     }
 }
