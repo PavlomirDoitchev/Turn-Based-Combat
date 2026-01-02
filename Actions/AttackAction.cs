@@ -8,6 +8,7 @@ namespace Assets.Assets.Scripts.Actions
 {
     public class AttackAction : BaseAction
     {
+
         [Flags]
         private enum AttackType
         {
@@ -21,6 +22,7 @@ namespace Assets.Assets.Scripts.Actions
             Attacking,
             Cooloff
         }
+        [SerializeField] private LayerMask obstacleLayer;   
         [SerializeField] private AttackType attackType;
         [SerializeField] private int meleeAttackRange = 1;
         [SerializeField] private int attackRange = 4;
@@ -111,11 +113,19 @@ namespace Assets.Assets.Scripts.Actions
                     {
                         continue;
                     }
-                    Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(testGridPosition);
 
+                    Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(testGridPosition);
                     // Check if units are on the same team
                     if (targetUnit.IsEnemy() == unit.IsEnemy())
                     {
+                        continue;
+                    }
+                    Vector3 unitWorldPosition = LevelGrid.Instance.GetWorldPosition(unitGridPosition);
+                    float unitShoulderHeight = 1.7f;
+                    Vector3 direction = (targetUnit.GetWorldPosition() - unitWorldPosition).normalized;
+                    if(Physics.Raycast(unitWorldPosition + Vector3.up * unitShoulderHeight, direction, Vector3.Distance(unitWorldPosition, targetUnit.GetWorldPosition()), obstacleLayer))
+                    {
+                        //blocked by obstacle
                         continue;
                     }
                     validGridPositionList.Add(testGridPosition);

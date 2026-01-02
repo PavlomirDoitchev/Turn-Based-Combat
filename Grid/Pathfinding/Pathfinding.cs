@@ -57,7 +57,7 @@ namespace Assets.Assets.Scripts.Grid
                 }
             }
         }
-        public List<GridPosition> FindPath(GridPosition startGridPosition, GridPosition endGridPosition)
+        public List<GridPosition> FindPath(GridPosition startGridPosition, GridPosition endGridPosition, out int pathLength)
         {
             List<PathNode> openList = new List<PathNode>();
             List<PathNode> closedList = new List<PathNode>();
@@ -89,6 +89,7 @@ namespace Assets.Assets.Scripts.Grid
                 if (currentNode == endNode)
                 {
                     // Reached final node
+                    pathLength = endNode.GetFCost();
                     return CalculatePath(endNode);
                 }
 
@@ -122,6 +123,7 @@ namespace Assets.Assets.Scripts.Grid
                 }
             }
             // No path found
+            pathLength = 0;
             return null;
         }
         public int CalculateDistance(GridPosition a, GridPosition b)
@@ -219,6 +221,19 @@ namespace Assets.Assets.Scripts.Grid
                 gridPositionList.Add(pathNode.GetGridPosition());
             }
             return gridPositionList;
+        }
+        public bool IsWalkableGridPosition(GridPosition gridPosition)
+        {
+            return gridSystem.GetGridObject(gridPosition).IsWalkable();
+        }
+        public bool HasPath(GridPosition start, GridPosition end) 
+        {
+            return FindPath(start, end, out int pathLength) != null;
+        }
+        public int GetPathLength(GridPosition start, GridPosition end)
+        {
+            FindPath(start, end, out int pathLength);
+            return pathLength;
         }
     }
 

@@ -167,9 +167,13 @@ namespace Assets.Assets.Scripts
         }
         public int GetActionPoints() => actionPoints;
         public BaseAction[] GetBaseActionArray() => baseActionArray;
-        
-            
-        
+
+        public Vector3 GetWorldPosition()
+        {
+            return transform.position;
+        }
+
+
         //#region Expose Actions
         //public MoveAction GetMoveAction() => moveAction;
         //public SpinAction GetSpinAction() => spinAction;
