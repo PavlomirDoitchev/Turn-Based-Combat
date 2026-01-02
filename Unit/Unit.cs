@@ -142,6 +142,7 @@ namespace Assets.Assets.Scripts
             animationController.Play(AnimationState.Death);
             LevelGrid.Instance.RemoveUnitAtGridPosition(gridPosition, this);
             this.GetComponent<BoxCollider>().enabled = false;
+            UnitActionSystem.Instance.AutoDeSelectUnit();
             OnAnyUnitDead?.Invoke(this, EventArgs.Empty);   
         }
         private void OnDestroy()
@@ -153,9 +154,9 @@ namespace Assets.Assets.Scripts
         {
             healthSystem.Damage(damageAmount);
 
-            Debug.Log(IsNPC()
-                ? $"NPC Unit took {damageAmount} damage."
-                : $"Player Unit took {damageAmount} damage.");
+            //Debug.Log(IsNPC()
+            //    ? $"NPC Unit took {damageAmount} damage."
+            //    : $"Player Unit took {damageAmount} damage.");
         }
 
         #region Expose Actions

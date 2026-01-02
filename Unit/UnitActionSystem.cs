@@ -83,7 +83,19 @@ namespace Assets.Assets.Scripts
             GridCellHighlight.Instance.Hide();
             OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
         }
+        public void AutoDeSelectUnit()
+        {
+            if (selectedUnit == null)
+                return;
+            if (isBusy) return;
 
+            selectedUnit = null;
+            selectedAction = null;
+
+            GridCellHighlight.Instance.Hide();
+            OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
+
+        }
         private bool TryHandleUnitSelection()
         {
             if (!Input.GetMouseButtonDown(0))
@@ -140,12 +152,6 @@ namespace Assets.Assets.Scripts
             GridCellHighlight.Instance.SetActionColor(
                 GetActionColor(action)
             );
-
-            //if (action.GetActionPointsCost() > selectedUnit.GetActionPoints())
-            //{
-            //    GridCellHighlight.Instance.Hide();
-            //    return;
-            //}
 
             RefreshSelectedActionGridVisual();
         }
