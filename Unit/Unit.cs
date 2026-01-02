@@ -21,11 +21,11 @@ namespace Assets.Assets.Scripts
         public UnitAnimationSet animationSet;
         private UnitAnimationController animationController;
 
-        // Actions
-        private MoveAction moveAction;
-        private SpinAction spinAction;
-        private AttackAction attackAction;
-        private HealAction healAction;
+        //// Actions
+        //private MoveAction moveAction;
+        //private SpinAction spinAction;
+        //private AttackAction attackAction;
+        //private HealAction healAction;
         private BaseAction[] baseActionArray;
         private bool hasTakenTurn;
         public bool HasTakenTurn => hasTakenTurn;
@@ -40,10 +40,6 @@ namespace Assets.Assets.Scripts
             healthSystem.OnDamaged += HealthSystem_OnDamaged;
             healthSystem.OnDied += HealthSystem_OnDied;
             animationController = GetComponent<UnitAnimationController>();
-            moveAction = GetComponent<MoveAction>();
-            spinAction = GetComponent<SpinAction>();
-            attackAction = GetComponent<AttackAction>();
-            healAction = GetComponent<HealAction>();
             baseActionArray = GetComponents<BaseAction>();
         }
         private void Start()
@@ -158,15 +154,28 @@ namespace Assets.Assets.Scripts
             //    ? $"NPC Unit took {damageAmount} damage."
             //    : $"Player Unit took {damageAmount} damage.");
         }
-
-        #region Expose Actions
+        public T GetAction<T>() where T : BaseAction
+        {
+            foreach (BaseAction baseAction in baseActionArray)
+            {
+                if (baseAction is T)
+                {
+                    return (T)baseAction;
+                }
+            }
+            return null;
+        }
         public int GetActionPoints() => actionPoints;
-        public MoveAction GetMoveAction() => moveAction;
-        public SpinAction GetSpinAction() => spinAction;
-        public AttackAction GetAttackAction() => attackAction;
-        public HealAction GetHealAction() => healAction;
         public BaseAction[] GetBaseActionArray() => baseActionArray;
-        #endregion
+        
+            
+        
+        //#region Expose Actions
+        //public MoveAction GetMoveAction() => moveAction;
+        //public SpinAction GetSpinAction() => spinAction;
+        //public AttackAction GetAttackAction() => attackAction;
+        //public HealAction GetHealAction() => healAction;
+        //#endregion
 
         public HealthSystem GetHealthSystem() => healthSystem;
         public bool IsNPC() => isNPC;

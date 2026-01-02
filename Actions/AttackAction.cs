@@ -98,12 +98,12 @@ namespace Assets.Assets.Scripts.Actions
                     {
                         continue;
                     }
-                    // Check if within attack range (Manhattan distance)
-                    //int testDistance = Mathf.Abs(x) + Mathf.Abs(z);
-                    //if (testDistance > attackRange)
-                    //{
-                    //    continue;
-                    //}
+                    //Check if within attack range(Manhattan distance)
+                    int testDistance = Mathf.Abs(x) + Mathf.Abs(z);
+                    if (testDistance > attackRange)
+                    {
+                        continue;
+                    }
 
 
                     //Check if grid pos is empty

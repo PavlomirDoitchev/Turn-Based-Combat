@@ -138,7 +138,7 @@ namespace Assets.Assets.Scripts
 
             selectedUnit = unit;
 
-            SetSelectedAction(unit.GetMoveAction());
+            SetSelectedAction(unit.GetAction<MoveAction>());
 
             RefreshSelectedActionGridVisual();
 

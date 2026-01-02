@@ -99,7 +99,7 @@ namespace Assets.Assets.Scripts.Actions
 
         public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
         {
-            int targetCountAtGridPosition = unit.GetAttackAction().GetTargetCountAtPosition(gridPosition);
+            int targetCountAtGridPosition = unit.GetAction<AttackAction>().GetTargetCountAtPosition(gridPosition);
             return new EnemyAIAction
             {
                 gridPosition = gridPosition,
