@@ -64,6 +64,13 @@ namespace Assets.Assets.Scripts.Grid
 
             PathNode startNode = gridSystem.GetGridObject(startGridPosition);
             PathNode endNode = gridSystem.GetGridObject(endGridPosition);
+            //Exclude positions where a unit already exists.
+            foreach (Unit unit in UnitManager.Instance.GetUnitList())
+            {
+                GridPosition unitPosition = unit.GetGridPosition();
+                if (unitPosition == startGridPosition || unitPosition == endGridPosition) continue;
+                closedList.Add(gridSystem.GetGridObject(unitPosition));
+            }
             openList.Add(startNode);
             for (int x = 0; x < gridSystem.GetWidth(); x++)
             {
