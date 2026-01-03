@@ -81,6 +81,7 @@ namespace Assets.Assets.Scripts
             selectedAction = null;
 
             GridCellHighlight.Instance.Hide();
+            GridGroundMesh.Instance?.SetVisible(true);
             OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
         }
         public void AutoDeSelectUnit()
@@ -91,7 +92,7 @@ namespace Assets.Assets.Scripts
 
             selectedUnit = null;
             selectedAction = null;
-
+            GridGroundMesh.Instance?.SetVisible(true);
             GridCellHighlight.Instance.Hide();
             OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
 
@@ -141,7 +142,7 @@ namespace Assets.Assets.Scripts
             SetSelectedAction(unit.GetAction<MoveAction>());
 
             RefreshSelectedActionGridVisual();
-
+            GridGroundMesh.Instance?.SetVisible(false);
             OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
         }
         public void SetSelectedAction(BaseAction action)

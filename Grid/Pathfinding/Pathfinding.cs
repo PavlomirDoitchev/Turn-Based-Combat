@@ -9,7 +9,7 @@ namespace Assets.Assets.Scripts.Grid
         private const int MOVE_STRAIGHT_COST = 10;
         private const int MOVE_DIAGONAL_COST = 14;
 
-        [SerializeField] private Transform gridDebugObjectPrefab;
+        //[SerializeField] private Transform gridDebugObjectPrefab;
         [SerializeField] private LayerMask obstacleLayerMask;
 
         private int _width, _height;
@@ -36,7 +36,7 @@ namespace Assets.Assets.Scripts.Grid
             this._cellSize = cellSize;
 
             gridSystem = new GridSystem<PathNode>(_width, _height, _cellSize, (GridSystem<PathNode> g, GridPosition gridPosition) => new PathNode(gridPosition));
-            gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
+            //gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
 
             for(int x = 0; x < _width; x++)
             {
@@ -57,6 +57,7 @@ namespace Assets.Assets.Scripts.Grid
                 }
             }
         }
+
         public List<GridPosition> FindPath(GridPosition startGridPosition, GridPosition endGridPosition, out int pathLength)
         {
             List<PathNode> openList = new List<PathNode>();
@@ -64,6 +65,7 @@ namespace Assets.Assets.Scripts.Grid
 
             PathNode startNode = gridSystem.GetGridObject(startGridPosition);
             PathNode endNode = gridSystem.GetGridObject(endGridPosition);
+
             //Exclude positions where a unit already exists.
             foreach (Unit unit in UnitManager.Instance.GetUnitList())
             {

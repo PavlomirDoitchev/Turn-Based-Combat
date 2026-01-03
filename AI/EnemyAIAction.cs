@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Assets.Assets.Scripts.Actions;
 
 namespace Assets.Assets.Scripts.AI
 {
@@ -10,5 +6,6 @@ namespace Assets.Assets.Scripts.AI
     {
         public GridPosition gridPosition;
         public int actionValue;
+        public BaseAction baseAction;
     }
 }

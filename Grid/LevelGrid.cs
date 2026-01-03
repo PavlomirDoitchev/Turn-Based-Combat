@@ -7,8 +7,8 @@ namespace Assets.Assets.Scripts.Grid
     {
         public static LevelGrid Instance { get; private set; }
         [SerializeField] private Transform gridDebugObjectPrefab;
-        [SerializeField] private int width = 10;
-        [SerializeField] private int height = 10;
+        [SerializeField] private int width;
+        [SerializeField] private int height;
         private float cellSize = 2f;
 
         private GridSystem<GridObject> gridSystem;
@@ -28,7 +28,9 @@ namespace Assets.Assets.Scripts.Grid
         private void Start()
         {
             Pathfinding.Instance.Setup(width, height, cellSize);
+            //GridGroundMesh.Instance?.RefreshWalkableQuads();
         }
+     
         public void AddUnitAtGridPosition(GridPosition gridPosition, Unit unit)
         {
             GridObject gridObject = gridSystem.GetGridObject(gridPosition);
