@@ -27,8 +27,7 @@ namespace Assets.Assets.Scripts
         //private AttackAction attackAction;
         //private HealAction healAction;
         private BaseAction[] baseActionArray;
-        private bool hasTakenTurn;
-        public bool HasTakenTurn => hasTakenTurn;
+     
 
 
         [Header("Unit Stats")]
@@ -69,16 +68,7 @@ namespace Assets.Assets.Scripts
             }
         }
 
-        public void StartTurn()
-        {
-            hasTakenTurn = false;
-            actionPoints = ACTION_POINTS_MAX;
-            OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
-        }
-        public void EndTurn()
-        {
-            hasTakenTurn = true;
-        }
+     
         public GridPosition GetGridPosition() => gridPosition;
         public UnitAnimationController GetAnimationController() => animationController;
         public bool CanSpendActionPointsToTakeAction(BaseAction baseAction) => actionPoints >= baseAction.GetActionPointsCost();
@@ -129,7 +119,7 @@ namespace Assets.Assets.Scripts
             if (healthSystem.GetHealth() > 0)
             {
                 animationController.Play(AnimationState.Hurt);
-                
+
             }
         }
 
@@ -139,7 +129,7 @@ namespace Assets.Assets.Scripts
             LevelGrid.Instance.RemoveUnitAtGridPosition(gridPosition, this);
             this.GetComponent<BoxCollider>().enabled = false;
             UnitActionSystem.Instance.AutoDeSelectUnit();
-            OnAnyUnitDead?.Invoke(this, EventArgs.Empty);   
+            OnAnyUnitDead?.Invoke(this, EventArgs.Empty);
         }
         private void OnDestroy()
         {

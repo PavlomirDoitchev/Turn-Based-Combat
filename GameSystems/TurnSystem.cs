@@ -26,7 +26,7 @@ namespace Assets.Assets.Scripts.GameSystems
             UnitActionSystem.Instance.AutoDeSelectUnit();
             if (isPlayerTurn)
                 turnNumber++;
-            
+
             OnTurnChanged?.Invoke(this, EventArgs.Empty);
         }
         public int GetTurnNumber()

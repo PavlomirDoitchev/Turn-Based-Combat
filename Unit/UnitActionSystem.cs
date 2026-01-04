@@ -134,6 +134,28 @@ namespace Assets.Assets.Scripts
 
             return false;
         }
+        //private bool TryHandleUnitSelection()
+        //{
+        //    if (!Input.GetMouseButtonDown(0))
+        //        return false;
+
+        //    GridPosition mouseGridPosition =
+        //        LevelGrid.Instance.GetGridPosition(Mouseworld.GetPosition());
+
+        //    if (!LevelGrid.Instance.HasAnyUnitOnGridPosition(mouseGridPosition))
+        //        return false;
+
+        //    Unit unit = LevelGrid.Instance.GetUnitAtGridPosition(mouseGridPosition);
+
+        //    if (unit == selectedUnit)
+        //        return false;
+
+        //    if (unit.IsNPC())
+        //        return false;
+
+        //    SetSelectedUnit(unit);
+        //    return true;
+        //}
         private void SetSelectedUnit(Unit unit)
         {
 
