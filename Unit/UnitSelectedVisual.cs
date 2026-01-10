@@ -18,13 +18,7 @@ namespace Assets.Assets.Scripts
             UpdateVisual();
 
         }
-        //private void Update()
-        //{
-        //    if (!unit.IsMoving) 
-        //    {
-        //        UpdateVisual();
-        //    }
-        //}
+       
         private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs empty)
         {
             UpdateVisual();

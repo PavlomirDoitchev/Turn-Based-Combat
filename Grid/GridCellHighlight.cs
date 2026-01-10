@@ -61,6 +61,15 @@ public class GridCellHighlight : MonoBehaviour
     {
         material.SetColor("_ActionColor", color);
     }
+    public void SetActionTexture(Texture texture)
+    {
+        material.SetTexture("_ActionTex", texture);
+    }
+
+    public void SetDefaultTexture(Texture texture) 
+    {
+        material.SetTexture("_MainTex", texture);
+    }
     public void ConfirmActionAt(GridPosition gridPosition)
     {
         if (currentGridPositions == null)

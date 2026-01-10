@@ -2,7 +2,8 @@ Shader "Custom/URP_GlowHighlight_Hover"
 {
     Properties
     {
-        _MainTex("Texture", 2D) = "white" {}
+        _MainTex("Default Texture", 2D) = "white" {}
+        _ActionTex("Action Texture", 2D) = "white" {}
         _BaseColor("Base Color", Color) = (0.3, 0.6, 1, 0.6)
         _GlowColor("Glow Color", Color) = (0.1, 0.4, 1, 1)
         _GlowStrength("Glow Strength", Float) = 1.5
@@ -12,6 +13,7 @@ Shader "Custom/URP_GlowHighlight_Hover"
         _ActionColor("Action Color", Color) = (0.3, 0.6, 1, 0.6)
         _ClickedQuad("Clicked Quad Index", Int) = -1
         _ClickPulseStrength("Click Pulse Strength", Float) = 2.5
+        _UseActionTex("Use Action Texture", Float) = 0
     }
 
     SubShader
@@ -36,20 +38,21 @@ Shader "Custom/URP_GlowHighlight_Hover"
             {
                 float4 positionOS   : POSITION;
                 float2 uv           : TEXCOORD0;
-
-                uint vertexID       : SV_VertexID;    
+                uint vertexID       : SV_VertexID;
             };
 
             struct Varyings
             {
                 float4 positionHCS  : SV_POSITION;
                 float2 uv           : TEXCOORD0;
-
                 uint vertexID       : TEXCOORD1;
             };
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
+
+            TEXTURE2D(_ActionTex);
+            SAMPLER(sampler_ActionTex);
 
             float4 _BaseColor;
             float4 _GlowColor;
@@ -60,20 +63,23 @@ Shader "Custom/URP_GlowHighlight_Hover"
             float4 _ActionColor;
             int _ClickedQuad;
             float _ClickPulseStrength;
+            float _UseActionTex;
 
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uv = IN.uv;
-
                 OUT.vertexID = IN.vertexID;
                 return OUT;
             }
 
             float4 frag(Varyings IN) : SV_Target
             {
-                float4 tex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
+                // Choose which texture to use
+                float4 tex = (_UseActionTex > 0.5)
+                             ? SAMPLE_TEXTURE2D(_ActionTex, sampler_ActionTex, IN.uv)
+                             : SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
 
                 // Pulsating glow intensity
                 float pulse = (sin(_Time.y * _GlowPulseSpeed) * 0.5 + 0.5);
@@ -86,18 +92,10 @@ Shader "Custom/URP_GlowHighlight_Hover"
                 float hoverFactor = (quadIndex == _HoveredQuad) ? _HoverBoost : 1.0;
 
                 float clickPulse = 1.0;
-
                 if (quadIndex == _ClickedQuad)
-                {
                     clickPulse += sin(_Time.y * 20.0) * _ClickPulseStrength;
-                }
 
-                float4 finalColor =
-                    tex *
-                    _ActionColor *
-                    hoverFactor *
-                    clickPulse
-                    + glow;
+                float4 finalColor = tex * _ActionColor * hoverFactor * clickPulse + glow;
 
                 return finalColor;
             }
@@ -105,4 +103,3 @@ Shader "Custom/URP_GlowHighlight_Hover"
         }
     }
 }
-

@@ -17,7 +17,10 @@ namespace Assets.Assets.Scripts
         private BaseAction selectedAction;
 
         [SerializeField] private LayerMask unitLayer;
-
+        [SerializeField] private Texture moveTexture;
+        [SerializeField] private Texture attackTexture;
+        [SerializeField] private Texture healTexture;
+        [SerializeField] private Texture defaultTexture;
         private bool isBusy;
         private void Awake()
         {
@@ -175,6 +178,7 @@ namespace Assets.Assets.Scripts
             GridCellHighlight.Instance.SetActionColor(
                 GetActionColor(action)
             );
+            GridCellHighlight.Instance.SetActionTexture(GetActionTexture(action));
 
             RefreshSelectedActionGridVisual();
         }
@@ -229,6 +233,20 @@ namespace Assets.Assets.Scripts
                 HealAction => new Color(0.3f, 1f, 0.3f, 0.6f),
                 _ => Color.white
             };
+        }
+        private Texture GetActionTexture(BaseAction action)
+        {
+            switch (action)
+            {
+                case MoveAction:
+                    return moveTexture;  
+                case AttackAction:
+                    return attackTexture;
+                case HealAction:
+                    return healTexture;
+                default:
+                    return defaultTexture;
+            }
         }
         #endregion
         private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
